@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram QoS Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            color: #333;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        .sentiment, .satisfaction {
+            margin-bottom: 30px;
+        }
+        ul li {
+            padding: 6px 0;
+        }
+        .high { color: green; }
+        .medium { color: orange; }
+        .low { color: red; }
+        canvas {
+            max-width: 100%;
+        }
+        .explanation {
+            font-size: 0.95rem;
+            background-color: #eef2f3;
+            padding: 10px;
+            border-left: 4px solid #2980b9;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Instagram QoS Dashboard</h1>
+
+        <div class="explanation">
+            <p><strong>Average Sentiment</strong> reflects the overall mood of user comments on Instagram posts. Positive values indicate good sentiment, negative values indicate bad mood or dissatisfaction.</p>
+            <p><strong>Satisfaction Distribution</strong> classifies user responses based on likes, replies, and sentiment — helping you track how well your content is received.</p>
+        </div>
+
+        <div class="sentiment">
+            <h2>Average Sentiment</h2>
+            <p>{{ avg_sentiment | round(3) }}</p>
+        </div>
+
+        <div class="satisfaction">
+            <h2>Satisfaction Distribution</h2>
+            <ul>
+                {% for satisfaction, count in satisfaction_count.items() %}
+                    <li class="{% if satisfaction == 'Highly Satisfied' %}high{% elif satisfaction == 'Satisfied' %}medium{% else %}low{% endif %}">
+                        {{ satisfaction }}: {{ count }}
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <canvas id="satisfactionChart"></canvas>
+        </div>
+
+        <a href="/twitter" style="text-decoration: none; color: #2980b9; font-size: 18px;">Go to Twitter Dashboard</a>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('satisfactionChart').getContext('2d');
+        const satisfactionChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: {{ satisfaction_count.keys() | list | tojson }},
+                datasets: [{
+                    label: 'Number of Comments',
+                    data: {{ satisfaction_count.values() | list | tojson }},
+                    backgroundColor: ['#2ecc71', '#f39c12', '#e74c3c'],
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Comment Satisfaction Levels',
+                        color: '#2c3e50',
+                        font: {
+                            size: 16
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 10
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

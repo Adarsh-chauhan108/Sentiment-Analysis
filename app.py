@@ -4,7 +4,6 @@ from analysis import analyze_sentiment, classify_satisfaction
 import os
 
 app = Flask(__name__, template_folder='D:/Aditya/Social-media-dataset-samples-main/templates')
-
 # Path to your Instagram dataset
 data_file = 'D:/Aditya/Social-media-dataset-samples-main/instagram_qos/data/Instagram-datasets.csv'
 

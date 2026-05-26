@@ -2,6 +2,7 @@ from flask import Flask, render_template
 import pandas as pd
 from analysis import analyze_sentiment, classify_satisfaction
 import os
+
 app = Flask(__name__, template_folder='D:/Aditya/Social-media-dataset-samples-main/templates')
 
 # Path to your Instagram dataset
